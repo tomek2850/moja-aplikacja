@@ -1,16 +1,13 @@
-// Funkcja generująca unikalny identyfikator
-function generateUniqueId() {
-return 'tab_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-}
-const tabId = generateUniqueId(); // Generuj unikalny identyfikator dla zakładki
-
+const tabId = 'myUniqueTabId'; // Unikalny identyfikator zakładki
 const selectElement = document.getElementById('options');
+
 // Obsługa wyboru opcji z dropdownu
 selectElement.addEventListener('change', function() {
 const selectedValue = selectElement.value;
 console.log("Wybrana opcja: " + selectedValue);
 saveDropdownSelection(); // Zapisz do LocalStorage
 });
+
 // Funkcja dodająca aktualny czas do tabeli
 document.getElementById('saveTimeBtn').addEventListener('click', function() {
 const tableBody = document.getElementById('tableBody');
@@ -33,8 +30,8 @@ tableBody.deleteRow(tableBody.rows.length - 1); // Usunięcie ostatniego wiersza
 saveToLocalStorage(); // Zapisz do LocalStorage
 }
 });
-// Funkcja zapisująca do LocalStorage
-function saveToLocalStorage() {
+// Funkcja zapisująca do LocalStorage function
+saveToLocalStorage() {
 const tableBody = document.getElementById('tableBody');
 const times = [];
 for (let i = 0; i < tableBody.rows.length; i++) {
@@ -44,8 +41,11 @@ localStorage.setItem(tabId + '_savedTimes', JSON.stringify(times)); // Użyj uni
 }
 // Funkcja ładująca dane z LocalStorage
 function loadFromLocalStorage() {
-const savedTimes = JSON.parse(localStorage.getItem(tabId + '_savedTimes')) || []; // Użyj unikalnego klucza
+const savedTimes = JSON.parse(localStorage.getItem(tabId + '_savedTimes')) || [];
+// Użyj unikalnego klucza
 const tableBody = document.getElementById('tableBody');
+// Opróżnij tabelę przed załadowaniem nowych danych
+tableBody.innerHTML = '';
 
 savedTimes.forEach(time => {
 const newRow = document.createElement('tr');
@@ -63,8 +63,7 @@ localStorage.setItem(tabId + '_selectedOption', selectedValue); // Użyj unikaln
 // Funkcja ładująca wybór dropdownu z LocalStorage
 function loadDropdownSelection() {
 const selectedValue = localStorage.getItem(tabId + '_selectedOption');
-if (selectedValue) {
-document.getElementById('options').value = selectedValue;
+if (selectedValue) { document.getElementById('options').value = selectedValue;
 }
 }
 // Załaduj dane z LocalStorage przy starcie strony
