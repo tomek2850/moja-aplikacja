@@ -1,73 +1,49 @@
-const tabId = 'myUniqueTabId'; // Unikalny identyfikator zakładki
-const selectElement = document.getElementById('options');
-
-// Obsługa wyboru opcji z dropdownu
-selectElement.addEventListener('change', function() {
-const selectedValue = selectElement.value;
-console.log("Wybrana opcja: " + selectedValue);
-saveDropdownSelection(); // Zapisz do LocalStorage
-});
-
-// Funkcja dodająca aktualny czas do tabeli
-document.getElementById('saveTimeBtn').addEventListener('click', function() {
+// Funkcja do dodawania czasu do tabeli
+function addTimeToTable(time) {
 const tableBody = document.getElementById('tableBody');
-const currentTime = new Date().toLocaleTimeString(); // Pobranie aktualnej godziny
-// Utworzenie nowego wiersza
-const newRow = document.createElement('tr');
-const newCell = document.createElement('td');
-newCell.textContent = currentTime;
-newRow.appendChild(newCell);
-// Dodanie nowego wiersza do tabeli
-tableBody.appendChild(newRow);
-saveToLocalStorage(); // Zapisz do LocalStorage
-});
-// Funkcja usuwająca najnowszy wpis
-document.getElementById('deleteTimeBtn').addEventListener('click', function() {
-const tableBody = document.getElementById('tableBody');
-// Sprawdzenie, czy tabela ma jakieś wpisy
-if (tableBody.rows.length > 0) {
-tableBody.deleteRow(tableBody.rows.length - 1); // Usunięcie ostatniego wiersza
-saveToLocalStorage(); // Zapisz do LocalStorage
+const row = document.createElement('tr');
+const cell = document.createElement('td');
+cell.textContent = time;
+row.appendChild(cell);
+tableBody.appendChild(row); }
+// Funkcja do ładowania zapisanych czasów z Local Storage
+function loadTimes() {
+const times = JSON.parse(localStorage.getItem('times')) || [];
+times.forEach(time => {
+addTimeToTable(time);
+// Dodaj każdy czas do tabeli
+}); }
+// Funkcja do zapisywania aktualnego czasu
+function saveTime() {
+const currentTime = new Date().toLocaleTimeString();
+// Pobierz aktualny czas
+const times = JSON.parse(localStorage.getItem('times')) || [];
+// Wczytaj zapisane czasy
+times.push(currentTime);
+// Dodaj nowy czas do tablicy
+localStorage.setItem('times', JSON.stringify(times));
+// Zapisz tablicę do Local Storage
+addTimeToTable(currentTime);
+// Dodaj czas do tabeli
 }
-});
-// Funkcja zapisująca do LocalStorage function
-saveToLocalStorage() {
-const tableBody = document.getElementById('tableBody');
-const times = [];
-for (let i = 0; i < tableBody.rows.length; i++) {
-times.push(tableBody.rows[i].cells[0].textContent);
+// Funkcja do usuwania ostatniego czasu
+function deleteLastTime() {
+const times = JSON.parse(localStorage.getItem('times')) || [];
+times.pop(); // Usuwa ostatni czas
+localStorage.setItem('times', JSON.stringify(times));
+// Zapisz zaktualizowaną tablicę
+renderTimes();
+// Odśwież tabelę
 }
-localStorage.setItem(tabId + '_savedTimes', JSON.stringify(times)); // Użyj unikalnego klucza
-}
-// Funkcja ładująca dane z LocalStorage
-function loadFromLocalStorage() {
-const savedTimes = JSON.parse(localStorage.getItem(tabId + '_savedTimes')) || [];
-// Użyj unikalnego klucza
+// Funkcja do renderowania czasów w tabeli
+function renderTimes() {
 const tableBody = document.getElementById('tableBody');
-// Opróżnij tabelę przed załadowaniem nowych danych
 tableBody.innerHTML = '';
-
-savedTimes.forEach(time => {
-const newRow = document.createElement('tr');
-const newCell = document.createElement('td');
-newCell.textContent = time;
-newRow.appendChild(newCell);
-tableBody.appendChild(newRow);
-});
+// Wyczyść tabelę przed ponownym renderowaniem
+loadTimes(); // Załaduj czasy z Local Storage
 }
-// Funkcja zapisująca wybór dropdownu do LocalStorage
-function saveDropdownSelection() {
-const selectedValue = document.getElementById('options').value;
-localStorage.setItem(tabId + '_selectedOption', selectedValue); // Użyj unikalnego klucza
-}
-// Funkcja ładująca wybór dropdownu z LocalStorage
-function loadDropdownSelection() {
-const selectedValue = localStorage.getItem(tabId + '_selectedOption');
-if (selectedValue) { document.getElementById('options').value = selectedValue;
-}
-}
-// Załaduj dane z LocalStorage przy starcie strony
-window.addEventListener('load', function() {
-loadFromLocalStorage();
-loadDropdownSelection();
-});
+// Funkcje przypisane do przycisków
+document.getElementById('saveTimeBtn').addEventListener('click', saveTime);
+document.getElementById('deleteTimeBtn').addEventListener('click', deleteLastTime);
+ // Wywołaj loadTimes przy załadowaniu strony
+ window.onload = loadTimes;
